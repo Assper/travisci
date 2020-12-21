@@ -1,0 +1,27 @@
+language: node_js
+node_js:
+  - 14.13.1
+
+cache: npm
+
+install:
+  - cd server && npm ci
+
+script:
+  - npm run lint
+  - npm run build
+  
+deploy:
+  - provider: script
+    skip-cleanup: true
+    github_token: $GITHUB_TOKEN
+    script: node scripts/deploy.js staging
+    on:
+      condition: $TRAVIS_BRANCH =~ /^release\/.*/
+
+  - provider: script
+    skip-cleanup: true
+    github_token: $GITHUB_TOKEN
+    script: node scripts/deploy.js production
+    on:
+      branch: main
